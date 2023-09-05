@@ -166,9 +166,9 @@ const toJSTypes = (type, buffer) => {
   }
 }
 
-const mapMemory = ({ schema, incomingFields, chunk }) => {
+const mapMemory = ({ schema, incomingFields, chunk, pageCount }) => {
   const raw = createRaw(schema);
-  let offset = 0;
+  let offset = pageCount * calculateRawSize(schema);
 
   for (let field of incomingFields) {
     const fieldType = getType(schema.fields[field]);
@@ -192,7 +192,7 @@ const workingWithBuffer = (chunk, bytesRead, { schema, incomingFields }) => {
   const raws = [];
 
   for (let i = 0; i < pageCount; ++ i) {
-    raws.push(mapMemory({ schema, incomingFields, chunk }));
+    raws.push(mapMemory({ schema, incomingFields, chunk, pageCount: i }));
   }
 
   return raws;
@@ -423,7 +423,7 @@ const insert = async ({fields = '*', table, database}) => {
   const buffer = new Uint32Array(2);
 
   buffer[0] = 2;
-  buffer[1] = 24;
+  buffer[1] = 32;
 
   await FileSystem.write(fd, buffer)
 }
@@ -432,8 +432,8 @@ const insert = async ({fields = '*', table, database}) => {
 
 const main = async () => {
   // await insert({ table: 'User', database: 'test' });
-  console.log(await parse('select * from User;'));
-  // console.log(await select({fields: '*', table: 'User', database: 'test'}));
+  // console.log(await parse('select * from User;'));
+  console.log(await select({fields: '*', table: 'User', database: 'test'}));
 }
 
 main();
