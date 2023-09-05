@@ -1,0 +1,14 @@
+{
+  "name": "rdbm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node ./parser/parser.test.js",
+    "parser": "node parser/index.js",
+    "parser:debug": "node --inspect parser/index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
