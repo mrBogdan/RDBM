@@ -433,10 +433,18 @@ const insert = async ({fields = '*', table, database}) => {
 const main = async () => {
   // await insert({ table: 'User', database: 'test' });
   // console.log(await parse('select * from User;'));
-  console.log(await select({fields: '*', table: 'User', database: 'test'}));
+  // console.log(await select({fields: '*', table: 'User', database: 'test'}));
 }
 
 main();
+
+void async function SimpleSelectTest() {
+  const result = await select({fields: '*', table: 'User', database: 'test'});
+
+  assert.deepEqual(result, [
+    { id: 2, age: 24 }, { id: 2, age: 24 }, { id: 2, age: 32 }
+  ]);
+}();
 
 
 void function SimpleStatementParsing() {
