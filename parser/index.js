@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import { promisify } from 'node:util';
 import assert from 'node:assert';
 
-import { OPERATORS, TOKENS } from './constants.js';
+import { OPERATORS, SYSTEM_NAMES, TOKENS, ENTITIES, ERRORS } from './constants.js';
 
 const Types = {
   Int: 4,
@@ -30,6 +30,8 @@ const FileSystem = {
   open: promisify(fs.open),
   write: promisify(fs.write),
   close: promisify(fs.close),
+  mkdir: fs.promises.mkdir,
+  access: fs.promises.access,
 }
 
 // Int Char(5) Char(5) -> 11
@@ -214,15 +216,6 @@ const select = ({ fields, table, database, whereCondition }) => {
 
   return findData({ table, database, incomingFields: fields, schema, whereCondition });
 };
-
-const commands = {
-   select,
-  'insert': NOOP,
-  'delete': NOOP,
-  'create': NOOP,
-  'alter': NOOP,
-  'drop': NOOP,
-}
 
 const parseStatement = (statement) => {
   let words = [];
@@ -415,6 +408,33 @@ const parse = (code) => {
 
 // console.log(parse('select * from User;'));
 
+
+
+const create = async (entity, entityName) => {
+  switch(entity.toLowerCase()) {
+    case ENTITIES.DATABASE: {
+      try {
+        await FileSystem.mkdir(`./${SYSTEM_NAMES.DATABASES}/${entityName}`);
+      } catch (e) {
+        if (e.code === ERRORS.EEXIST) {
+          throw new Error('Database is already created!');
+        } 
+      }
+      
+      break;
+    }
+    case ENTITIES.TABLE: {
+      break;
+    }
+    case ENTITIES.USER: {
+      break;
+    }
+    default: {
+      throw new Error('Unknown entity name');
+    }
+  }
+}
+
 const insert = async ({fields = '*', table, database}) => {
   const tablePath = `./databases/${database}/${table}`;
   
@@ -425,18 +445,34 @@ const insert = async ({fields = '*', table, database}) => {
   buffer[0] = 2;
   buffer[1] = 32;
 
-  await FileSystem.write(fd, buffer)
+  await FileSystem.write(fd, buffer);
 }
 
-// 
+const commands = {
+  create,
+  select,
+  'insert': NOOP,
+  'delete': NOOP,
+  'alter': NOOP,
+  'drop': NOOP,
+}
 
 const main = async () => {
+  // await create(ENTITIES.DATABASE, 'test1');
   // await insert({ table: 'User', database: 'test' });
   // console.log(await parse('select * from User;'));
   // console.log(await select({fields: '*', table: 'User', database: 'test'}));
 }
 
 main();
+
+void async function CreateDatabaseShouldThrowAnErrorIfItExists() {
+  try {
+    await create(ENTITIES.DATABASE, 'test1');
+  } catch(e) {
+    assert.equal(e.message, 'Database is already created!');
+  }
+}();
 
 void async function SimpleSelectTest() {
   const result = await select({fields: '*', table: 'User', database: 'test'});

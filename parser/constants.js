@@ -20,9 +20,26 @@ const OPERATORS = {
   LESS: '<',
   MORE: '>',
   NOT_EQUAL: '!=',
+};
+
+const SYSTEM_NAMES = {
+  DATABASES: 'databases',
+};
+
+const ENTITIES = {
+  TABLE: 'table',
+  DATABASE: 'database',
+  USER: 'user',
+};
+
+const ERRORS = {
+  EEXIST: 'EEXIST',
 }
 
 export {
   TOKENS,
   OPERATORS,
+  ENTITIES,
+  ERRORS,
+  SYSTEM_NAMES,
 }
