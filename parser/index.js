@@ -424,6 +424,9 @@ const create = async (entity, entityName) => {
       break;
     }
     case ENTITIES.TABLE: {
+      const currentDatabase = '';
+
+      await FileSystem.open(`./${SYSTEM_NAMES.DATABASES}/${currentDatabase}/${entityName}`);
       break;
     }
     case ENTITIES.USER: {
