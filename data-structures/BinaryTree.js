@@ -11,6 +11,10 @@ class TreeNode {
   }
 
   insert(node) {
+    if (this.getKey() === node.getKey()) {
+      return null;
+    }
+
     if (node.key > this.key) {
       if (isNull(this.rigth)) {
         this.rigth = node;
@@ -76,6 +80,10 @@ class BinaryTree {
       return;
     }
 
+    if (this.root.getKey() === node.getKey()) {
+      return null;
+    }
+
     this.root.insert(node);
   }
 
@@ -109,4 +117,16 @@ void function RunningTest() {
 
   assert.equal(result.getValue(), 11);
   assert.notEqual(result.getValue(), 12);
+}();
+
+void function SkipExistingValuesTest() {
+  const bt = new BinaryTree();
+
+  bt.insert(new TreeNode(10, 10));
+  bt.insert(new TreeNode(5, 10));
+  const result = bt.insert(new TreeNode(10, 11));
+  const secondResult = bt.insert(new TreeNode(5, 10));
+
+  assert.equal(result, null);
+  assert.equal(secondResult, undefined);
 }();
